@@ -12,5 +12,17 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return 'Anime Api With '.$router->app->version();
+});
+
+$router->group(['prefix' => 'api/v1'], function () use ($router) {
+  $router->get('anime', 'AnimeController@index');
+  $router->get('anime/delete', 'AnimeController@indexDelete');
+  $router->get('anime/{id}', 'AnimeController@show');
+  $router->get('anime/delete/{id}', 'AnimeController@showDelete');
+  $router->post('anime', 'AnimeController@store');
+  $router->post('anime/delete/{id}', 'AnimeController@restore');
+  $router->post('anime/{id}', 'AnimeController@update');
+  $router->delete('anime/{id}', 'AnimeController@destroy');
+  $router->delete('anime/delete/{id}', 'AnimeController@harddestroy');
 });

@@ -22,12 +22,13 @@ class CreateUsersTable extends Migration
             $table->integer('level')->unsigned();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
         DB::table('users')->insert([
 	            'nama' => 'Administrator',
               'username'=>'admin',
 	            'email' => 'admin@admin.com',
-	            'password' => bcrypt('admin'),
+	            'password' => app('hash')->make('admin'),
               'level'=>1,
 	       ]);
          DB::table('users')->insert([

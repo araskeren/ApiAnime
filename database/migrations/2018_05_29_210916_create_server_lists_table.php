@@ -21,6 +21,7 @@ class CreateServerListsTable extends Migration
             $table->string('download')->nullable();
             $table->string('streaming')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

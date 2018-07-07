@@ -25,16 +25,15 @@ class CreateAnimesTable extends Migration
             $table->integer('episode')->unsigned()->nullable();
             $table->date('tanggal_tayang')->nullable();
             $table->date('tanggal_end')->nullable();
-            $table->string('type')->nullable();
-            $table->string('sumber')->nullable();
-            $table->string('musim')->nullable();
-            $table->string('status')->nullable();
-            $table->string('produser')->nullable();
-            $table->string('licensor')->nullable();
-            $table->string('broadcast')->nullable();
+            $table->string('type',15)->nullable();
+            $table->string('sumber',15)->nullable();
+            $table->string('musim',11)->nullable();
+            $table->string('status',8)->nullable();
             $table->string('cover')->nullable();
             $table->text('sinopsis')->nullable();
+            $table->string('broadcast')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

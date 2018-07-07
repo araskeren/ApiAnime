@@ -20,6 +20,7 @@ class CreateTontonNantisTable extends Migration
             $table->integer('episode')->unsigned();
             $table->foreign('episode')->references('id')->on('episode')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

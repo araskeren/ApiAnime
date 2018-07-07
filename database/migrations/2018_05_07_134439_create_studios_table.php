@@ -17,29 +17,30 @@ class CreateStudiosTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
-            $table->string('nama_studio');
+            $table->string('nama');
             $table->integer('suka')->unsigned();
             $table->integer('tidak_suka')->unsigned();
             $table->integer('total_anime')->unsigned();
             $table->timestamps();
+            $table->softDeletes();
         });
         DB::table('studio')->insert([
           'user_id'=>1,
-          'nama_studio'=>'J.C Staff',
+          'nama'=>'J.C Staff',
           'suka'=>200,
           'tidak_suka'=>10,
           'total_anime'=>143,
         ]);
         DB::table('studio')->insert([
           'user_id'=>1,
-          'nama_studio'=>'Madhouse',
+          'nama'=>'Madhouse',
           'suka'=>200,
           'tidak_suka'=>15,
           'total_anime'=>153,
         ]);
         DB::table('studio')->insert([
           'user_id'=>1,
-          'nama_studio'=>'P.A Works',
+          'nama'=>'P.A Works',
           'suka'=>200,
           'tidak_suka'=>40,
           'total_anime'=>53,

@@ -23,6 +23,7 @@ class CreateEpisodesTable extends Migration
             $table->string('cover')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

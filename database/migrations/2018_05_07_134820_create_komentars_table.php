@@ -23,6 +23,7 @@ class CreateKomentarsTable extends Migration
             $table->foreign('user')->references('id')->on('users')->onUpdate('cascade');
             $table->longText('komentar');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
