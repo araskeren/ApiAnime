@@ -83,4 +83,8 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('komentar/{id}', 'KomentarController@destroy');
   $router->delete('komentar/{id}/destroy', 'KomentarController@harddestroy');
 
+  $router->get('subscribe/', 'SubscribeController@index');
+  $router->post('subscribe/', 'SubscribeController@store');
+  $router->delete('subscribe/{id}/destroy', 'SubscribeController@harddestroy');
+
 });
