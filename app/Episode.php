@@ -16,6 +16,9 @@ class Episode extends Model
     protected $dates = ['deleted_at'];
 
     public function Anime(){
-      return $this->where('')
+      return $this->belongsTo(Anime::class,'anime');
+    }
+    public function User(){
+      return $this->belongsTo(User::class,'user');
     }
 }

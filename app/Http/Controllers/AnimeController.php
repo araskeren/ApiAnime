@@ -385,6 +385,22 @@ class AnimeController extends Controller
         return response()->json($response,200);
     }
 
+    public function viewImage($id){
+      $judul=Anime::select('cover')->where('id',$id)->first()->cover;
+      if($judul!=null){
+        $cover = storage_path()."/cover_anime/".$judul;
+      }else{
+        $cover=null;
+      }
+      if(file_exists($cover)) {
+        $file = file_get_contents($cover);
+        return response($file, 200)->header('Content-Type', 'image/jpeg');
+      }
+      $res['success'] = false;
+      $res['message'] = "Gambar Tidak Ditemukan";
+
+      return $res;
+    }
     //Validasi Inputan
     private function validasi($request){
       return $this->validate($request, [

@@ -17,7 +17,7 @@ class CreateAnimesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('judul');
+            $table->string('judul')->unique();
             $table->string('judul_alternatif')->nullable();
             $table->integer('studio_id')->unsigned()->nullable();;
             $table->foreign('studio_id')->references('id')->on('studio')->onUpdate('cascade')->onDelete('cascade');

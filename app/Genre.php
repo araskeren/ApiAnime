@@ -12,6 +12,7 @@ class Genre extends Model
     protected $fillable=[
       'genre'
     ];
+    protected $hidden = array('anime');
     protected $dates = ['deleted_at'];
     public function Anime(){
       return $this->belongsToMany(Anime::class)->withTimestamps();
