@@ -13,7 +13,7 @@ class CreateHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('histori', function (Blueprint $table) {
+        Schema::create('history', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user')->unsigned();
             $table->foreign('user')->references('id')->on('users')->onUpdate('cascade');
