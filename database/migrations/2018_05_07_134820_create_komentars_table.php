@@ -15,8 +15,6 @@ class CreateKomentarsTable extends Migration
     {
         Schema::create('komentar', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('anime')->unsigned();
-            $table->foreign('anime')->references('id')->on('anime')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('episode')->unsigned();
             $table->foreign('episode')->references('id')->on('episode')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user')->unsigned();

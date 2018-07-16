@@ -138,7 +138,18 @@ class HistoryController extends Controller
      */
     public function restore($id)
     {
-        //
+        $history= History::onlyTrashed()->select('id')->where('id',$id)->first();
+        if($history->restore()){
+          $response=[
+            'message'=>'History Berhasil di Restore',
+            'data'=>$history
+          ];
+          return response()->json($response,201);
+        }
+        $response=[
+          'message'=>'Telah terjadi kesalahan'
+        ];
+        return response()->json($response,404);
     }
 
     /**

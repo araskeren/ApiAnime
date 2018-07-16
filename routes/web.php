@@ -75,14 +75,12 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('history/{id}', 'HistoryController@destroy');
   $router->delete('history/{id}/destroy', 'HistoryController@harddestroy');
 
-  $router->get('komentar/', 'ProduserController@index');
-  $router->get('produser/delete', 'ProduserController@indexDelete');
-  $router->get('produser/{id}', 'ProduserController@show');
-  $router->get('produser/{id}/delete', 'ProduserController@showDelete');
-  $router->get('produser/{id}/restore', 'ProduserController@restore');
-  $router->post('produser/', 'ProduserController@store');
-  $router->post('produser/{id}', 'ProduserController@update');
-  $router->delete('produser/{id}', 'ProduserController@destroy');
-  $router->delete('produser/{id}/destroy', 'ProduserController@harddestroy');
+  $router->get('komentar/', 'KomentarController@index');
+  $router->get('komentar/delete', 'KomentarController@indexDelete');
+  $router->get('komentar/{id}/restore', 'KomentarController@restore');
+  $router->post('komentar/', 'KomentarController@store');
+  $router->post('komentar/{id}', 'KomentarController@update');
+  $router->delete('komentar/{id}', 'KomentarController@destroy');
+  $router->delete('komentar/{id}/destroy', 'KomentarController@harddestroy');
 
 });
