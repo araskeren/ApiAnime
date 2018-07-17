@@ -68,6 +68,15 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('produser/{id}', 'ProduserController@destroy');
   $router->delete('produser/{id}/destroy', 'ProduserController@harddestroy');
 
+  $router->get('studio/', 'StudioController@index');
+  $router->get('studio/delete', 'StudioController@indexDelete');
+  $router->get('studio/{id}', 'StudioController@show');
+  $router->get('studio/{id}/restore', 'StudioController@restore');
+  $router->post('studio/', 'StudioController@store');
+  $router->post('studio/{id}', 'StudioController@update');
+  $router->delete('studio/{id}', 'StudioController@destroy');
+  $router->delete('studio/{id}/destroy', 'StudioController@harddestroy');
+
   $router->get('history/', 'HistoryController@index');
   $router->get('history/delete', 'HistoryController@indexDelete');
   $router->get('history/{id}/restore', 'HistoryController@restore');

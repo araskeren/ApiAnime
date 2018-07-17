@@ -11,7 +11,7 @@ class Sample extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
     }
@@ -21,7 +21,7 @@ class Sample extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexDelete()
+    public function indexDelete(Request $request)
     {
         //
     }
@@ -43,7 +43,7 @@ class Sample extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
         //
     }
@@ -51,7 +51,7 @@ class Sample extends Controller
     /**
     *Show Detail Delete with soft delete
     */
-    public function showDelete($id)
+    public function showDelete(Request $request,$id)
     {
         //
     }
@@ -73,7 +73,7 @@ class Sample extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function restore($id)
+    public function restore(Request $request,$id)
     {
         //
     }
@@ -84,7 +84,7 @@ class Sample extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
         //
     }
@@ -95,8 +95,30 @@ class Sample extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function harddestroy($id)
+    public function harddestroy(Request $request,$id)
     {
         //
+    }
+
+    private function validasi($request){
+      return $this->validate($request, [
+        'required'=>'required|max:255',
+        'angka'=>'integer|min:1',
+        'date'=>'date_format:d-m-Y',
+        'string'=>'alpha|max:15',
+        'array'=>'array|array|min:1',
+        'image'=>'image',
+      ]);
+    }
+
+    private function validasiUpdate($request){
+      return $this->validate($request, [
+        'required'=>'required|max:255',
+        'angka'=>'integer|min:1',
+        'date'=>'date_format:d-m-Y',
+        'string'=>'alpha|max:15',
+        'array'=>'array|array|min:1',
+        'image'=>'image',
+      ]);
     }
 }

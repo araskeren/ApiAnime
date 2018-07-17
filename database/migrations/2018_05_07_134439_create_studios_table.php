@@ -18,9 +18,9 @@ class CreateStudiosTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
             $table->string('nama')->unique();
-            $table->integer('suka')->unsigned();
-            $table->integer('tidak_suka')->unsigned();
-            $table->integer('total_anime')->unsigned();
+            $table->integer('suka')->nullable();
+            $table->integer('tidak_suka')->nullable();
+            $table->integer('total_anime')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
