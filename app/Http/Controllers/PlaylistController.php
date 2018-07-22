@@ -19,7 +19,11 @@ class PlaylistController extends Controller
         $user=$request->header('Authorization');
         $playlist= Playlist::select('id','episode')->where('user',$user)->get();
         foreach($playlist as $i){
-          $episode=Episode::select('id','')
+          $episode=Episode::select('id','anime','episode','cover')->where('id',$i->episode)->first();
+          $anime=Anime::select('judul','status')->where('id',$episode->anime)->first();
+
+          $i->episode=$episode;
+          $i->anime=$anime;
         }
         $response=[
           'message'=>'Daftar playlist',
@@ -129,7 +133,29 @@ class PlaylistController extends Controller
      */
     public function harddestroy(Request $request,$id)
     {
-        //
+      $user=$request->header('Authorization');
+      $playlist=Playlist::where('id',$id)->first();
+      if($playlist->forceDelete()){
+        $playlist->create=[
+          'href'=>'/api/v1/playlist/',
+          'param'=>[
+            'episode'=>'integer|required'
+          ],
+          'header'=>[
+            'Authorization'=>'string|required'
+          ],
+          'method'=>'POST',
+        ];
+        $response=[
+          'message'=>'History Berhasil Di Hapus',
+          'data'=>$playlist
+        ];
+        return response()->json($response,201);
+      }
+      $response=[
+        'message'=>'Telah terjadi kesalahan'
+      ];
+      return response()->json($response,404);
     }
 
     private function validasi($request){
