@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTontonNantisTable extends Migration
+class CreatePlayListTable extends Migration
 {
     /**
      * Run the migrations.
@@ -31,6 +31,6 @@ class CreateTontonNantisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tonton_nanti');
+        Schema::dropIfExists('playlist');
     }
 }

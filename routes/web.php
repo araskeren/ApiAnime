@@ -96,4 +96,8 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->post('subscribe/', 'SubscribeController@store');
   $router->delete('subscribe/{id}/destroy', 'SubscribeController@harddestroy');
 
+  $router->get('playlist/', 'PlaylistController@index');
+  $router->post('playlist/', 'PlaylistController@store');
+  $router->delete('playlist/{id}/destroy', 'PlaylistController@harddestroy');
+
 });
