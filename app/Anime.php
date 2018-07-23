@@ -10,19 +10,11 @@ class Anime extends Model
     protected $table='anime';
 
     protected $fillable=[
-      'user_id','judul','judul_alternatif','studio_id','durasi','episode','tanggal_tayang','tanggal_end','type','sumber','musim','status','broadcast','cover','sinopsis'
+      'user_id','judul','judul_alternatif','slug','sumber','cover'
     ];
     protected $dates = ['deleted_at'];
     public function Genre(){
       return $this->belongsToMany(Genre::class)->withTimestamps();
     }
-    public function Produser(){
-      return $this->belongsToMany(Produser::class)->withTimestamps();
-    }
-    public function Licensor(){
-      return $this->belongsToMany(Licensor::class)->withTimestamps();
-    }
-    public function Studio(){
-      return $this->belongsTo(Studio::class,'studio_id');
-    }
+    
 }

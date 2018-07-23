@@ -10,7 +10,7 @@ class Genre extends Model
     protected $table='genre';
 
     protected $fillable=[
-      'genre'
+      'genre','slug'
     ];
     protected $hidden = array('anime');
     protected $dates = ['deleted_at'];
