@@ -13,7 +13,7 @@ class SeasonLicensor extends Migration
      */
     public function up()
     {
-        Schema::create('season_licensor', function (Blueprint $table) {
+        Schema::create('licensor_season', function (Blueprint $table) {
           $table->increments('id');
           $table->integer('season_id')->unsigned()->index();
           $table->foreign('season_id')->references('id')->on('season')->onUpdate('cascade')->onDelete('cascade');
@@ -31,6 +31,6 @@ class SeasonLicensor extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('season_licensor');
+        Schema::dropIfExists('licensor_season');
     }
 }

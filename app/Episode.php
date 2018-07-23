@@ -10,7 +10,7 @@ class Episode extends Model
     protected $table='episode';
 
     protected $fillable=[
-      'user','anime','episode','cover','keterangan'
+      'user','season','episode','cover','keterangan'
     ];
 
     protected $dates = ['deleted_at'];

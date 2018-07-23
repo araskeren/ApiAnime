@@ -22,12 +22,15 @@ class CreateGenresTable extends Migration
         });
         DB::table('genre')->insert([
           'genre'=>'Comedy',
+          'slug'=>'comedy'
         ]);
         DB::table('genre')->insert([
           'genre'=>'Romance',
+          'slug'=>'romance'
         ]);
         DB::table('genre')->insert([
           'genre'=>'Action',
+          'slug'=>'action'
         ]);
     }
 

@@ -13,7 +13,7 @@ class Licensor extends Model
       'nama'
     ];
     protected $dates = ['deleted_at'];
-    public function Anime(){
-      return $this->belongsToMany(Anime::class)->withTimestamps();
+    public function Season(){
+      return $this->belongsToMany(Season::class)->withTimestamps();
     }
 }

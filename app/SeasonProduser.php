@@ -4,14 +4,14 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-class AnimeLicensor extends Model
+class SeasonProduser extends Model
 {
     use SoftDeletes;
 
-    protected $table='anime_licensor';
+    protected $table='produser_season';
 
     protected $fillable=[
-      'anime_id','licensor_id'
+      'season_id','produser_id'
     ];
     protected $dates = ['deleted_at'];
 

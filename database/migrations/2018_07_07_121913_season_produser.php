@@ -13,7 +13,7 @@ class SeasonProduser extends Migration
      */
     public function up()
     {
-        Schema::create('season_produser', function (Blueprint $table) {
+        Schema::create('produser_season', function (Blueprint $table) {
           $table->increments('id');
           $table->integer('season_id')->unsigned()->index();
           $table->foreign('season_id')->references('id')->on('season')->onUpdate('cascade')->onDelete('cascade');
@@ -31,6 +31,6 @@ class SeasonProduser extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('season_produser');
+        Schema::dropIfExists('produser_season');
     }
 }

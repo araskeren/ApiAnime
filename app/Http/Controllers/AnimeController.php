@@ -115,7 +115,7 @@ class AnimeController extends Controller
 
       if($anime->save()){
         if($request->has('genre')){
-          $anime->Genre()->attach($request->id);
+          $anime->Genre()->attach($request->genre);
         }
         $anime->view_anime=[
           'href'=>'/api/v1/anime/'.$anime->slug,

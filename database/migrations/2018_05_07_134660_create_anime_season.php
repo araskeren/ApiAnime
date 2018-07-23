@@ -19,19 +19,21 @@ class CreateAnimeSeason extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('anime_id')->unsigned()->index();
             $table->foreign('anime_id')->references('id')->on('anime')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('season',50);
+            $table->integer('studio_id')->unsigned()->nullable();;
+            $table->foreign('studio_id')->references('id')->on('studio')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('season',10);
+            $table->string('slug',10);
             $table->integer('durasi')->unsigned()->nullable();
             $table->integer('episode')->unsigned()->nullable();
             $table->date('tanggal_tayang')->nullable();
             $table->date('tanggal_end')->nullable();
-            $table->integer('studio_id')->unsigned()->nullable();;
-            $table->foreign('studio_id')->references('id')->on('studio')->onUpdate('cascade')->onDelete('cascade');
             $table->string('musim',11)->nullable();
             $table->string('broadcast')->nullable();
             $table->string('type',15)->nullable();
             $table->string('cover')->nullable();
             $table->text('sinopsis')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

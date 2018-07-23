@@ -29,6 +29,17 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('anime/{slug}', 'AnimeController@destroy');
   $router->delete('anime/{slug}/destroy', 'AnimeController@harddestroy');
 
+  //$router->get('anime/{slug}', 'AnimeController@index');
+  $router->get('anime/{slug_anime}/season/delete', 'SeasonController@indexDelete');
+  $router->get('anime/{slug_anime}/{slug_season}', 'SeasonController@show');
+  //$router->get('anime/delete/{slug}', 'AnimeController@showDelete');
+  $router->get('anime/{slug_anime}/{slug_season}/cover','SeasonController@viewImage');
+  $router->get('anime/{slug_anime}/{slug_season}/restore', 'SeasonController@restore');
+  $router->post('anime/{slug_anime}/season', 'SeasonController@store');
+  $router->post('anime/{slug_anime}/{slug_season}', 'SeasonController@update');
+  $router->delete('anime/{slug_anime}/{slug_season}', 'SeasonController@destroy');
+  $router->delete('anime/{slug_anime}/{slug_season}/destroy', 'SeasonController@harddestroy');
+
   $router->get('anime/{id}/episode/', 'EpisodeController@index');
   $router->get('anime/{id}/episode/delete', 'EpisodeController@indexDelete');
   $router->get('anime/{id}/episode/{ep}', 'EpisodeController@show');

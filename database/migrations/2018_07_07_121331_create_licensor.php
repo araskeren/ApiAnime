@@ -16,6 +16,7 @@ class CreateLicensor extends Migration
         Schema::create('licensor', function (Blueprint $table) {
           $table->increments('id');
           $table->string('nama',50)->unique();
+          $table->string('slug',60)->unique();
           $table->timestamps();
           $table->softDeletes();
         });
