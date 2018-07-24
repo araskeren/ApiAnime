@@ -15,9 +15,10 @@ class CreateServerListsTable extends Migration
     {
         Schema::create('server_list', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('id_episode')->unsigned();
-            $table->foreign('id_episode')->references('id')->on('episode')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('server')->nullable();
+            $table->integer('episode_id')->unsigned();
+            $table->foreign('episode_id')->references('id')->on('episode')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('server',100);
+            $table->string('slug',120);
             $table->string('download')->nullable();
             $table->string('streaming')->nullable();
             $table->timestamps();

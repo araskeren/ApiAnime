@@ -51,6 +51,14 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('anime/{slug_anime}/{slug_season}/{ep}', 'EpisodeController@destroy');
   $router->delete('anime/{slug_anime}/{slug_season}/{ep}/destroy', 'EpisodeController@harddestroy');
 
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}/server', 'ServerController@index');
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}/delete', 'ServerController@indexDelete');
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}/{server}/restore', 'ServerController@restore');
+  $router->post('anime/{slug_anime}/{slug_season}/{ep}/server', 'ServerController@store');
+  $router->post('anime/{slug_anime}/{slug_season}/{ep}/{server}', 'ServerController@update');
+  $router->delete('anime/{slug_anime}/{slug_season}/{ep}/{server}', 'ServerController@destroy');
+  $router->delete('anime/{slug_anime}/{slug_season}/{ep}/{server}/destroy', 'ServerController@harddestroy');
+
   $router->get('genre/', 'GenreController@index');
   $router->get('genre/delete', 'GenreController@indexDelete');
   $router->get('genre/{id}', 'GenreController@show');
