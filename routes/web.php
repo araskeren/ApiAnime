@@ -40,16 +40,16 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
   $router->delete('anime/{slug_anime}/{slug_season}', 'SeasonController@destroy');
   $router->delete('anime/{slug_anime}/{slug_season}/destroy', 'SeasonController@harddestroy');
 
-  $router->get('anime/{id}/episode/', 'EpisodeController@index');
-  $router->get('anime/{id}/episode/delete', 'EpisodeController@indexDelete');
-  $router->get('anime/{id}/episode/{ep}', 'EpisodeController@show');
-  $router->get('anime/{id}/episode/{ep}/delete', 'EpisodeController@showDelete');
-  $router->get('anime/{id}/episode/{ep}/cover','EpisodeController@viewImage');
-  $router->get('anime/{id}/episode/{ep}/restore', 'EpisodeController@restore');
-  $router->post('anime/{id}/episode/', 'EpisodeController@store');
-  $router->post('anime/{id}/episode/{ep}', 'EpisodeController@update');
-  $router->delete('anime/{id}/episode/{ep}', 'EpisodeController@destroy');
-  $router->delete('anime/{id}/episode/{ep}/destroy', 'EpisodeController@harddestroy');
+  $router->get('anime/{slug_anime}/{slug_season}/episode/', 'EpisodeController@index');
+  $router->get('anime/{slug_anime}/{slug_season}/delete', 'EpisodeController@indexDelete');
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}', 'EpisodeController@show');
+  //$router->get('anime/{slug_anime}/{slug_season}/{ep}/delete', 'EpisodeController@showDelete');
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}/cover','EpisodeController@viewImage');
+  $router->get('anime/{slug_anime}/{slug_season}/{ep}/restore', 'EpisodeController@restore');
+  $router->post('anime/{slug_anime}/{slug_season}/episode/', 'EpisodeController@store');
+  $router->post('anime/{slug_anime}/{slug_season}/{ep}', 'EpisodeController@update');
+  $router->delete('anime/{slug_anime}/{slug_season}/{ep}', 'EpisodeController@destroy');
+  $router->delete('anime/{slug_anime}/{slug_season}/{ep}/destroy', 'EpisodeController@harddestroy');
 
   $router->get('genre/', 'GenreController@index');
   $router->get('genre/delete', 'GenreController@indexDelete');
