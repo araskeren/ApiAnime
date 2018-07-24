@@ -61,13 +61,13 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
   $router->get('genre/', 'GenreController@index');
   $router->get('genre/delete', 'GenreController@indexDelete');
-  $router->get('genre/{id}', 'GenreController@show');
-  $router->get('genre/{id}/delete', 'GenreController@showDelete');
-  $router->get('genre/{id}/restore', 'GenreController@restore');
+  $router->get('genre/{slug}', 'GenreController@show');
+  $router->get('genre/{slug}/delete', 'GenreController@showDelete');
+  $router->get('genre/{slug}/restore', 'GenreController@restore');
   $router->post('genre/', 'GenreController@store');
-  $router->post('genre/{id}', 'GenreController@update');
-  $router->delete('genre/{id}', 'GenreController@destroy');
-  $router->delete('genre/{id}/destroy', 'GenreController@harddestroy');
+  $router->post('genre/{slug}', 'GenreController@update');
+  $router->delete('genre/{slug}', 'GenreController@destroy');
+  $router->delete('genre/{slug}/destroy', 'GenreController@harddestroy');
 
   $router->get('licensor/', 'LicensorController@index');
   $router->get('licensor/delete', 'LicensorController@indexDelete');
@@ -91,12 +91,12 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
   $router->get('studio/', 'StudioController@index');
   $router->get('studio/delete', 'StudioController@indexDelete');
-  $router->get('studio/{id}', 'StudioController@show');
-  $router->get('studio/{id}/restore', 'StudioController@restore');
+  $router->get('studio/{slug}', 'StudioController@show');
+  $router->get('studio/{slug}/restore', 'StudioController@restore');
   $router->post('studio/', 'StudioController@store');
-  $router->post('studio/{id}', 'StudioController@update');
-  $router->delete('studio/{id}', 'StudioController@destroy');
-  $router->delete('studio/{id}/destroy', 'StudioController@harddestroy');
+  $router->post('studio/{slug}', 'StudioController@update');
+  $router->delete('studio/{slug}', 'StudioController@destroy');
+  $router->delete('studio/{slug}/destroy', 'StudioController@harddestroy');
 
   $router->get('history/', 'HistoryController@index');
   $router->get('history/delete', 'HistoryController@indexDelete');
