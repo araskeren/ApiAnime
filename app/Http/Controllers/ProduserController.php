@@ -3,11 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Produser;
-use App\AnimeProduser;
+use App\SeasonProduser;
 use App\Anime;
+use App\Season;
+use Illuminate\Support\Facades\Auth;
 class ProduserController extends Controller
 {
+  public function __construct(){
+    $this->middleware('auth:api',['only'=>[
+      'store',
+      'update',
+      'delete',
+      'showDelete',
+      'indexDelete',
+      'harddestroy',
+      'destroy',
+      'restore',
+    ]]);
+    $this->middleware('role',['only'=>[
+      'store',
+      'update',
+      'delete',
+      'showDelete',
+      'indexDelete',
+      'harddestroy',
+      'destroy',
+      'restore',
+    ]]);
+  }
     /**
      * Display all listing of the resource.
      *
@@ -15,10 +41,10 @@ class ProduserController extends Controller
      */
     public function index()
     {
-      $produser=Produser::select('id','nama')->get();
+      $produser=Produser::select('id','nama','slug')->get();
       foreach($produser as $i){
         $i->view_produser=[
-          'href'=>'/api/v1/produser/'.$i->id,
+          'href'=>'/api/v1/produser/'.$i->slug,
           'method'=>'GET',
         ];
       }
@@ -37,11 +63,11 @@ class ProduserController extends Controller
      */
     public function indexDelete()
     {
-      $produser= Produser::onlyTrashed()->select('id','nama')->get();
+      $produser= Produser::onlyTrashed()->select('id','nama','slug')->get();
       if($produser!=null){
         foreach($produser as $i){
           $i->view_produser=[
-            'href'=>'/api/v1/produser/'.$i->id.'/delete',
+            'href'=>'/api/v1/produser/'.$i->slug.'/delete',
             'method'=>'GET',
           ];
         }
@@ -66,11 +92,12 @@ class ProduserController extends Controller
     public function store(Request $request)
     {
         $produser= new Produser([
-          'nama'=>$request->produser
+          'nama'=>$request->produser,
+          'slug'=>Str::slug($request->produser)
         ]);
         if($produser->save()){
           $produser->view_produser=[
-            'href'=>'/api/v1/produser/'.$produser->id,
+            'href'=>'/api/v1/produser/'.$produser->slug,
             'method'=>'GET',
           ];
           $response=[
@@ -91,33 +118,40 @@ class ProduserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-      $produser=Produser::select('id','nama')->where('id',$id)->first();
-      $pivot_anime=AnimeProduser::select('anime_id')->where('produser_id',$id)->get();
-      //return isset($pivot_anime);
-      if(count($pivot_anime)>0){
-        foreach($pivot_anime as $i){
-          $anime[]=Anime::select('id','judul','status','cover')->where('id',$i->anime_id)->first();
+      $produser=Produser::select('id','nama','slug')->where('slug',$slug)->first();
+      if($produser!=null){
+        $pivot_produser=SeasonProduser::select('season_id')->where('produser_id',$produser->id)->get();
+        //return isset($pivot_anime);
+        if(count($pivot_produser)>0){
+          foreach($pivot_produser as $i){
+            $season[]=Season::
+            select('id','anime_id','season','slug','durasi','episode','tanggal_tayang','tanggal_end','musim','type','broadcast','cover','sinopsis')
+            ->where('id',$i->season_id)->first();
+          }
+          foreach($season as $i){
+            $anime=Anime::select('judul','slug','sumber','cover')->where('id',$i->anime_id)->first();
+            $anime->cover='/api/v1/'.$anime->slug.'/cover';
+            $i->anime=$anime;
+          }
         }
-        foreach($anime as $i){
-          $i->cover='/api/v1/anime/'.$i->id.'/cover';
+        if(count($pivot_produser)>0){
+          $response=[
+            'message'=>'Detail produser',
+            'produser'=>$produser,
+            'data'=>$season,
+          ];
+        }else{
+          $response=[
+            'message'=>'Detail produser',
+            'produser'=>$produser,
+            'data'=>[],
+          ];
         }
+        return response()->json($response,200);
       }
-      if(count($pivot_anime)>0){
-        $response=[
-          'message'=>'Detail produser',
-          'data'=>$produser,
-          'anime'=>$anime,
-        ];
-      }else{
-        $response=[
-          'message'=>'Detail produser',
-          'data'=>$produser,
-          'anime'=>null,
-        ];
-      }
-      return response()->json($response,200);
+      return response()->json(['Data Tidak ditemukan'],404);
     }
 
     /**
@@ -149,20 +183,23 @@ class ProduserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
-        $produser= Produser::select('id','nama')->where('id',$id)->first();
-        $produser->nama=$request->produser;
-        if($produser->update()){
-          $produser->view_produser=[
-            'href'=>'/api/v1/produser/'.$produser->id,
-            'method'=>'GET',
-          ];
-          $response=[
-            'message'=>'produser Berhasil di ubah ke '.$produser->produser,
-            'data'=>$produser
-          ];
-          return response()->json($response,201);
+        $produser= Produser::select('id','nama','slug')->where('slug',$slug)->first();
+        if($produser!=null){
+          $produser->nama=$request->produser;
+          $produser->slug=Str::slug($request->produser);
+          if($produser->update()){
+            $produser->view_produser=[
+              'href'=>'/api/v1/produser/'.$produser->id,
+              'method'=>'GET',
+            ];
+            $response=[
+              'message'=>'produser Berhasil di ubah ke '.$produser->produser,
+              'data'=>$produser
+            ];
+            return response()->json($response,201);
+          }
         }
         $response=[
           'message'=>'Telah terjadi kesalahan'
@@ -176,12 +213,12 @@ class ProduserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function restore($id)
+    public function restore($slug)
     {
-      $produser= Produser::onlyTrashed()->select('id','nama')->where('id',$id)->first();
-      if($produser->restore()){
+      $produser= Produser::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
+      if($produser!=null && $produser->restore()){
         $produser->view_produser=[
-          'href'=>'/api/v1/produser/'.$produser->id,
+          'href'=>'/api/v1/produser/'.$slug,
           'method'=>'GET',
         ];
         $response=[
@@ -202,12 +239,12 @@ class ProduserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($slug)
     {
-        $produser= Produser::select('id','nama')->where('id',$id)->first();
-        if($produser->delete()){
+        $produser= Produser::select('id','nama')->where('slug',$slug)->first();
+        if($produser!=null && $produser->delete()){
           $produser->restore=[
-            'href'=>'/api/v1/produser/'.$produser->id.'/restore',
+            'href'=>'/api/v1/produser/'.$slug.'/restore',
             'method'=>'GET',
           ];
           $response=[
@@ -228,10 +265,10 @@ class ProduserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function harddestroy($id)
+    public function harddestroy($slug)
     {
-      $produser= Produser::onlyTrashed()->select('id','nama')->where('id',$id)->first();
-      if($produser->forceDelete()){
+      $produser= Produser::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
+      if($produser!=null && $produser->forceDelete()){
         $produser->create=[
           'href'=>'/api/v1/produser/',
           'param'=>[

@@ -10,7 +10,7 @@ class Produser extends Model
     protected $table='produser';
 
     protected $fillable=[
-      'nama'
+      'nama','slug'
     ];
     protected $dates = ['deleted_at'];
     public function Season(){
