@@ -10,7 +10,7 @@ class Licensor extends Model
     protected $table='licensor';
 
     protected $fillable=[
-      'nama'
+      'nama','slug'
     ];
     protected $dates = ['deleted_at'];
     public function Season(){

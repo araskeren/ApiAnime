@@ -128,7 +128,7 @@ class StudioController extends Controller
       $studio=Studio::select('id','nama','slug','suka','tidak_suka','total_anime')->where('slug',$slug)->first();
       if($studio!=null){
         $season=Season::
-        select('id','anime_id','season','durasi','episode','tanggal_tayang','tanggal_end','musim','type','broadcast','cover','sinopsis')
+        select('id','anime_id','season','slug','durasi','episode','tanggal_tayang','tanggal_end','musim','type','broadcast','cover','sinopsis')
         ->where('studio_id',$studio->id)->get();
         if(count($season)!=$studio->total_anime){
           $studio->update([

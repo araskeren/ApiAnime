@@ -71,13 +71,13 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
 
   $router->get('licensor/', 'LicensorController@index');
   $router->get('licensor/delete', 'LicensorController@indexDelete');
-  $router->get('licensor/{id}', 'LicensorController@show');
-  $router->get('licensor/{id}/delete', 'LicensorController@showDelete');
-  $router->get('licensor/{id}/restore', 'LicensorController@restore');
+  $router->get('licensor/{slug}', 'LicensorController@show');
+  $router->get('licensor/{slug}/delete', 'LicensorController@showDelete');
+  $router->get('licensor/{slug}/restore', 'LicensorController@restore');
   $router->post('licensor/', 'LicensorController@store');
-  $router->post('licensor/{id}', 'LicensorController@update');
-  $router->delete('licensor/{id}', 'LicensorController@destroy');
-  $router->delete('licensor/{id}/destroy', 'LicensorController@harddestroy');
+  $router->post('licensor/{slug}', 'LicensorController@update');
+  $router->delete('licensor/{slug}', 'LicensorController@destroy');
+  $router->delete('licensor/{slug}/destroy', 'LicensorController@harddestroy');
 
   $router->get('produser/', 'ProduserController@index');
   $router->get('produser/delete', 'ProduserController@indexDelete');

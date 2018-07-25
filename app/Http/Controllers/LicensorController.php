@@ -3,11 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Licensor;
-use App\AnimeLicensor;
+use App\SeasonLicensor;
 use App\Anime;
+use App\Season;
+use Illuminate\Support\Facades\Auth;
 class LicensorController extends Controller
 {
+  public function __construct(){
+    $this->middleware('auth:api',['only'=>[
+      'store',
+      'update',
+      'delete',
+      'indexDelete',
+      'harddestroy',
+      'destroy',
+      'restore',
+    ]]);
+    $this->middleware('role',['only'=>[
+      'store',
+      'update',
+      'delete',
+      'indexDelete',
+      'harddestroy',
+      'destroy',
+      'restore',
+    ]]);
+  }
     /**
      * Display all listing of the resource.
      *
@@ -15,10 +39,10 @@ class LicensorController extends Controller
      */
     public function index()
     {
-      $licensor=Licensor::select('id','nama')->get();
+      $licensor=Licensor::select('id','nama','slug')->get();
       foreach($licensor as $i){
         $i->view_licensor=[
-          'href'=>'/api/v1/licensor/'.$i->id,
+          'href'=>'/api/v1/licensor/'.$i->slug,
           'method'=>'GET',
         ];
       }
@@ -37,11 +61,15 @@ class LicensorController extends Controller
      */
     public function indexDelete()
     {
-      $licensor= Licensor::onlyTrashed()->select('id','nama')->get();
+      $licensor= Licensor::onlyTrashed()->select('id','nama','slug')->get();
       if($licensor!=null){
         foreach($licensor as $i){
           $i->view_licensor=[
-            'href'=>'/api/v1/licensor/'.$i->id.'/delete',
+            'href'=>'/api/v1/licensor/'.$i->slug.'/delete',
+            'method'=>'GET',
+          ];
+          $i->restore=[
+            'href'=>'/api/v1/licensor/'.$i->slug.'/restore',
             'method'=>'GET',
           ];
         }
@@ -66,11 +94,12 @@ class LicensorController extends Controller
     public function store(Request $request)
     {
         $licensor= new licensor([
-          'nama'=>$request->licensor
+          'nama'=>$request->licensor,
+          'slug'=>Str::slug($request->licensor)
         ]);
         if($licensor->save()){
           $licensor->view_licensor=[
-            'href'=>'/api/v1/licensor/'.$licensor->id,
+            'href'=>'/api/v1/licensor/'.$licensor->slug,
             'method'=>'GET',
           ];
           $response=[
@@ -91,44 +120,51 @@ class LicensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-      $licensor=Licensor::select('id','nama')->where('id',$id)->first();
-      $pivot_anime=AnimeLicensor::select('anime_id')->where('licensor_id',$id)->get();
-      //return isset($pivot_anime);
-      if(count($pivot_anime)>0){
-        foreach($pivot_anime as $i){
-          $anime[]=Anime::select('id','judul','status','cover')->where('id',$i->anime_id)->first();
+      $licensor=Licensor::select('id','nama','slug')->where('slug',$slug)->first();
+      if($licensor!=null){
+        $pivot_licensor=SeasonLicensor::select('season_id')->where('licensor_id',$licensor->id)->get();
+        //return isset($pivot_anime);
+        if(count($pivot_licensor)>0){
+          foreach($pivot_licensor as $i){
+            $season[]=Season::
+            select('id','anime_id','season','slug','durasi','episode','tanggal_tayang','tanggal_end','musim','type','broadcast','cover','sinopsis')
+            ->where('id',$i->season_id)->first();
+          }
+          foreach($season as $i){
+            $anime=Anime::select('judul','slug','sumber','cover')->where('id',$i->anime_id)->first();
+            $anime->cover='/api/v1/'.$anime->slug.'/cover';
+            $i->anime=$anime;
+          }
         }
-        foreach($anime as $i){
-          $i->cover='/api/v1/anime/'.$i->id.'/cover';
+        if(count($pivot_licensor)>0){
+          $response=[
+            'message'=>'Detail licensor',
+            'licensor'=>$licensor,
+            'data'=>$season,
+          ];
+        }else{
+          $response=[
+            'message'=>'Detail licensor',
+            'licensor'=>$licensor,
+            'data'=>[],
+          ];
         }
+        return response()->json($response,200);
       }
-      if(count($pivot_anime)>0){
-        $response=[
-          'message'=>'Detail licensor',
-          'data'=>$licensor,
-          'anime'=>$anime,
-        ];
-      }else{
-        $response=[
-          'message'=>'Detail licensor',
-          'data'=>$licensor,
-          'anime'=>null,
-        ];
-      }
-      return response()->json($response,200);
+      return response()->json('Data Tidak Ditemukan!',404);
     }
 
     /**
     *Show Detail Delete with soft delete
     */
-    public function showDelete($id)
+    public function showDelete($slug)
     {
-      $licensor= Licensor::onlyTrashed()->select('id','nama')->where('id',$id)->first();
+      $licensor= Licensor::onlyTrashed()->select('id','nama','slug')->where('slug',$slug)->first();
       if($licensor!=null){
         $licensor->restore=[
-          'href'=>'/api/v1/licensor/'.$licensor->id.'/restore',
+          'href'=>'/api/v1/licensor/'.$slug.'/restore',
           'method'=>'GET',
         ];
         $response=[
@@ -149,25 +185,26 @@ class LicensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
-        $licensor= Licensor::select('id','nama')->where('id',$id)->first();
-        $licensor->nama=$request->licensor;
-        if($licensor->update()){
-          $licensor->view_licensor=[
-            'href'=>'/api/v1/licensor/'.$licensor->id,
-            'method'=>'GET',
-          ];
-          $response=[
-            'message'=>'licensor Berhasil di ubah ke '.$licensor->licensor,
-            'data'=>$licensor
-          ];
-          return response()->json($response,201);
+        $licensor= Licensor::select('id','nama')->where('slug',$slug)->first();
+        if($licensor!=null){
+          $licensor->nama=$request->licensor;
+          $licensor->slug=Str::slug($request->licensor);
+          if($licensor->update()){
+            $licensor->view_licensor=[
+              'href'=>'/api/v1/licensor/'.$licensor->slug,
+              'method'=>'GET',
+            ];
+            $response=[
+              'message'=>'licensor Berhasil di ubah ke '.$licensor->nama,
+              'data'=>$licensor
+            ];
+            return response()->json($response,201);
+          }
+
         }
-        $response=[
-          'message'=>'Telah terjadi kesalahan'
-        ];
-        return response()->json($response,404);
+        return response()->json(['message'=>'Telah terjadi kesalahan'],404);
     }
 
     /**
@@ -176,12 +213,12 @@ class LicensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function restore($id)
+    public function restore($slug)
     {
-      $licensor= Licensor::onlyTrashed()->select('id','nama')->where('id',$id)->first();
-      if($licensor->restore()){
+      $licensor= Licensor::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
+      if($licensor!=null && $licensor->restore()){
         $licensor->view_licensor=[
-          'href'=>'/api/v1/licensor/'.$licensor->id,
+          'href'=>'/api/v1/licensor/'.$slug,
           'method'=>'GET',
         ];
         $response=[
@@ -202,12 +239,12 @@ class LicensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($slug)
     {
-        $licensor= Licensor::select('id','nama')->where('id',$id)->first();
-        if($licensor->delete()){
+        $licensor= Licensor::select('id','nama')->where('slug',$slug)->first();
+        if($licensor!=null && $licensor->delete()){
           $licensor->restore=[
-            'href'=>'/api/v1/licensor/'.$licensor->id.'/restore',
+            'href'=>'/api/v1/licensor/'.$slug.'/restore',
             'method'=>'GET',
           ];
           $response=[
@@ -228,10 +265,10 @@ class LicensorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function harddestroy($id)
+    public function harddestroy($slug)
     {
-      $licensor= Licensor::onlyTrashed()->select('id','nama')->where('id',$id)->first();
-      if($licensor->forceDelete()){
+      $licensor= Licensor::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
+      if($licensor!=null&&$licensor->forceDelete()){
         $licensor->create=[
           'href'=>'/api/v1/licensor/',
           'param'=>[
