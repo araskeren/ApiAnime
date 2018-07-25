@@ -3,12 +3,36 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Studio;
 use App\Anime;
 use App\Genre;
+use App\Season;
 use App\AnimeGenre;
+use Illuminate\Support\Facades\Auth;
 class StudioController extends Controller
 {
+  public function __construct(){
+    $this->middleware('auth:api',['only'=>[
+      'store',
+      'update',
+      'delete',
+      'indexDelete',
+      'harddestroy',
+      'destroy',
+      'restore',
+      ]]);
+      $this->middleware('role',['only'=>[
+        'store',
+        'update',
+        'delete',
+        'indexDelete',
+        'harddestroy',
+        'destroy',
+        'restore',
+        ]]);
+  }
     /**
      * Display all listing of the resource.
      *
@@ -16,10 +40,10 @@ class StudioController extends Controller
      */
     public function index()
     {
-      $studio=Studio::select('id','nama')->get();
+      $studio=Studio::select('id','nama','slug')->get();
       foreach($studio as $i){
         $i->view_studio=[
-          'href'=>'/api/v1/studio/'.$i->id,
+          'href'=>'/api/v1/studio/'.$i->slug,
           'method'=>'GET',
         ];
       }
@@ -39,11 +63,11 @@ class StudioController extends Controller
     public function indexDelete(Request $request)
     {
       $user=$request->header('Authorization');
-      $studio= Studio::onlyTrashed()->select('id','nama','suka','tidak_suka')->get();
+      $studio= Studio::onlyTrashed()->select('id','nama','slug','suka','tidak_suka')->get();
       if($studio!=null){
         foreach($studio as $i){
           $i->restore=[
-            'href'=>'/api/v1/studio/'.$i->id.'/restore',
+            'href'=>'/api/v1/studio/'.$i->slug.'/restore',
             'method'=>'GET',
           ];
         }
@@ -68,14 +92,17 @@ class StudioController extends Controller
     public function store(Request $request)
     {
         $this->validasi($request);
-        $user=$request->header('Authorization');
         $studio=new Studio([
-          'user_id'=>$user,
-          'nama'=>$request->nama
+          'user_id'=>Auth::user()->id,
+          'nama'=>$request->nama,
+          'slug'=>Str::slug($request->nama),
+          'suka'=>0,
+          'tidak_suka'=>0,
+          'total_anime'=>0
         ]);
         if($studio->save()){
           $studio->view_studio=[
-            'href'=>'/api/v1/studio/'.$studio->id,
+            'href'=>'/api/v1/studio/'.$studio->slug,
             'method'=>'GET',
           ];
           $response=[
@@ -96,40 +123,49 @@ class StudioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($slug)
     {
-      $studio=Studio::select('id','nama')->where('id',$id)->first();
-      $anime=Anime::
-      select('id','judul','studio_id','durasi','episode','sumber','musim','type','tanggal_tayang')
-      ->where('studio_id',$id)->get();
-
-      if(count($anime)>0){
-        foreach($anime as $i){
-          $pivot_genre=AnimeGenre::where('anime_id',$i->id)->get();
-          $genre=null;
-          foreach($pivot_genre as $j){
-            $datagenre=Genre::select('id','genre')->where('id',$j->genre_id)->first();
-            $datagenre->view_genre='/api/v1/genre/'.$datagenre->id;
-            $genre[]=$datagenre;
-          }
-
-          $i->genre=$genre;
-          $i->cover=[
-            'href'=>'/api/v1/anime/'.$i->id.'/cover',
-            'method'=>'GET',
-          ];
-          $i->view_anime=[
-            'href'=>'/api/v1/anime/'.$i->id,
-            'method'=>'GET',
-          ];
+      $studio=Studio::select('id','nama','slug','suka','tidak_suka','total_anime')->where('slug',$slug)->first();
+      if($studio!=null){
+        $season=Season::
+        select('id','anime_id','season','durasi','episode','tanggal_tayang','tanggal_end','musim','type','broadcast','cover','sinopsis')
+        ->where('studio_id',$studio->id)->get();
+        if(count($season)!=$studio->total_anime){
+          $studio->update([
+            'total_anime'=>count($season)
+          ]);
         }
+        if(count($season)>0){
+          foreach($season as $i){
+            $pivot_genre=AnimeGenre::where('anime_id',$i->anime_id)->get();
+            $anime=Anime::select('judul','slug','sumber','cover')->where('id',$i->anime_id)->first();
+            $i->anime=$anime;
+            $genre=null;
+            foreach($pivot_genre as $j){
+              $datagenre=Genre::select('id','genre')->where('id',$j->genre_id)->first();
+              $datagenre->view_genre='/api/v1/genre/'.$datagenre->id;
+              $genre[]=$datagenre;
+            }
+
+            $i->genre=$genre;
+            $i->cover=[
+              'href'=>'/api/v1/anime/'.$i->id.'/cover',
+              'method'=>'GET',
+            ];
+            $i->view_anime=[
+              'href'=>'/api/v1/anime/'.$i->id,
+              'method'=>'GET',
+            ];
+          }
+        }
+        $response=[
+          'message'=>'Detail studio',
+          'studio'=>$studio,
+          'data'=>$season,
+        ];
+        return response()->json($response,200);
       }
-      $response=[
-        'message'=>'Detail studio',
-        'data'=>$studio,
-        'anime'=>$anime,
-      ];
-      return response()->json($response,200);
+      return response()->json('Telah Terjadi Kesalahan!',404);
     }
 
     /**
@@ -146,14 +182,15 @@ class StudioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
         $this->validasiUpdate($request);
         $user=$request->header('Authorization');
-        $studio= Studio::select('id','nama','suka','tidak_suka')->where('id',$id)->first();
+        $studio= Studio::select('id','nama','slug','suka','tidak_suka')->where('slug',$slug)->first();
         if($studio!=null){
           if($request->has('nama')){
             $studio->nama=$request->nama;
+            $studio->slug=Str::slug($request->nama);
           }
           if($request->has('suka')){
             $studio->suka=$request->suka;
@@ -185,10 +222,9 @@ class StudioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function restore(Request $request,$id)
+    public function restore(Request $request,$slug)
     {
-      $user=$request->header('Authorization');
-      $studio=Studio::onlyTrashed()->select('id','nama')->where('id',$id)->first();
+      $studio=Studio::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
       if($studio!=null){
         if($studio->restore()){
           $studio->view_studio=[
@@ -214,10 +250,10 @@ class StudioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request,$slug)
     {
         $user=$request->header('Authorization');
-        $studio= Studio::select('id','nama')->where('id',$id)->first();
+        $studio= Studio::select('id','nama')->where('slug',$slug)->first();
         if($studio!=null){
           if($studio->delete()){
             $studio->restore=[
@@ -243,10 +279,9 @@ class StudioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function harddestroy(Request $request,$id)
+    public function harddestroy($slug)
     {
-      $user=$request->header('Authorization');
-      $studio= Studio::onlyTrashed()->select('id','nama')->where('id',$id)->first();
+      $studio= Studio::onlyTrashed()->select('id','nama')->where('slug',$slug)->first();
       if($studio!=null){
         if($studio->forceDelete()){
           $studio->create=[

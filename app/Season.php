@@ -24,5 +24,11 @@ class Season extends Model
     public function Studio(){
       return $this->belongsTo(Studio::class,'studio_id');
     }
+    public function Anime(){
+      return $this->belongsTo(Anime::class,'anime_id');
+    }
+    public function User(){
+      return $this->belongsTo(User::class,'user_id');
+    }
 
 }

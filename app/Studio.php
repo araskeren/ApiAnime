@@ -10,7 +10,7 @@ class Studio extends Model
     protected $table='studio';
 
     protected $fillable=[
-      'user_id','nama','suka','tidak_suka','total_anime'
+      'user_id','nama','slug','suka','tidak_suka','total_anime'
     ];
     protected $dates = ['deleted_at'];
 
